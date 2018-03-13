@@ -45,8 +45,8 @@ model.fit(data_train, targets_train, validation_data=(data_validation, targets_v
 #output testing accuracy and F1-score
 #get predictions on test data
 predictions = np.rint(model.predict(data_test)) #the predictions are continuous, so I round them to the nearest integer (0 or 1)
-print('\nTesting accuracy: ' + str('%.2f'%(100*accuracy_score(targets_test, predictions))) + '%')
-print('F1-score: ' + str('%.4f'%f1score(targets_test, predictions)))
+print('\nTesting accuracy: ' + str('%.2f'%(100*accuracy_score(targets_test, predictions))) + '%') #typically around 85%
+print('F1-score: ' + str('%.4f'%f1score(targets_test, predictions))) #typicaly around 0.64
 
 #save model weights
 model.save_weights("model.h5")
