@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from sklearn.metrics import confusion_matrix
 from sklearn import tree
+import matplotlib.pyplot as pl
+import seaborn as sns
 
 #get data and split it into training, validation, and testing sets
 processed_data = pd.DataFrame.from_csv('processed_data.csv')
@@ -26,7 +28,7 @@ for i in range(1, 24):
     tree.fit(data_train, targets_train) #fit the model
 
     #add accuracy for this test to testing_accs
-    validation_accs.append(tree.score(data_validation, targets_validation))
+    validation_accs.append(100*tree.score(data_validation, targets_validation))
 
 depth = validation_accs.index(max(validation_accs))+1 #the tree depth that produced the greatest test accuracy - in general this tends to be 7 or 8
 
@@ -50,10 +52,18 @@ false_negative = confusion['Predicted <=$50k']['True >$50k']
 f1score = 2 * true_positive / (2 * true_positive + false_positive + false_negative) #calculate F1-score
 
 print('F1-score: ' + str('%.4f'%f1score))
-print('\nConfusion matrix: ')
+#print('\nConfusion matrix: ')
 #print(confusion)
 
 #save the decision tree
 export_graphviz(model, out_file="decision_tree.dot", feature_names=list(processed_data.drop('over_50k', axis=1)), impurity=False, filled=True)
 
-
+#plot validation accuracies
+sns.set_style('darkgrid')
+pl.title('Validation Accuracy for Decision Trees of Various Maximum Depths', y=1.01, size=12)
+pl.xlabel('Maximum Depth', fontsize=10)
+pl.ylabel('Validation Accuracy (%)', fontsize=10)
+ax = sns.barplot([i for i in range(1, 24)], validation_accs, palette='Blues_d')
+pl.ylim([75,90]) #restrict y axis for visibility
+pl.savefig('tree_val.jpg')
+pl.show()
