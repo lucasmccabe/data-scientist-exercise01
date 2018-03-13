@@ -28,8 +28,7 @@ for i in range(1, 24):
     #add accuracy for this test to testing_accs
     validation_accs.append(tree.score(data_validation, targets_validation))
 
-depth = validation_accs.index(max(validation_accs))+1 #the tree depth that produced the greatest test accuracy
-#in general this tends to be 7 or 8
+depth = validation_accs.index(max(validation_accs))+1 #the tree depth that produced the greatest test accuracy - in general this tends to be 7 or 8
 
 print('\nSelecting a maximum tree depth of ' + str(depth))
 
@@ -44,14 +43,17 @@ confusion = pd.DataFrame(confusion_matrix(targets_test, tree.predict(data_test))
     columns=['Predicted <=$50k', 'Predicted >$50k'],
     index=['True <=$50k', 'True >$50k'])
 
+#I recognize that f1_score is already part of sklearn.metrics, but I thought it would be fun to implement it myself
 true_positive = confusion['Predicted >$50k']['True >$50k']
 false_positive = confusion['Predicted >$50k']['True <=$50k']
 false_negative = confusion['Predicted <=$50k']['True >$50k']
 f1score = 2 * true_positive / (2 * true_positive + false_positive + false_negative) #calculate F1-score
+
 print('F1-score: ' + str('%.4f'%f1score))
 print('\nConfusion matrix: ')
-print(confusion)
+#print(confusion)
 
 #save the decision tree
 export_graphviz(model, out_file="decision_tree.dot", feature_names=list(processed_data.drop('over_50k', axis=1)), impurity=False, filled=True)
+
 
