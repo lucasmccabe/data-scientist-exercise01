@@ -3,6 +3,9 @@ from keras.layers import Dense
 from sklearn.metrics import confusion_matrix, accuracy_score
 import numpy as np
 import pandas as pd
+from keras.utils import plot_model
+import matplotlib.pyplot as pl
+import seaborn as sns
 
 
 #get data and split it into training, validation, and testing sets
@@ -40,7 +43,7 @@ model.add(Dense(1, activation='sigmoid')) #output layer
 model.compile(optimizer='adam', loss='binary_crossentropy',  metrics=['accuracy'])
 
 #fit model
-model.fit(data_train, targets_train, validation_data=(data_validation, targets_validation), nb_epoch=10, batch_size=64)
+history = model.fit(data_train, targets_train, validation_data=(data_validation, targets_validation), nb_epoch=50, batch_size=64)
 
 #output testing accuracy and F1-score
 #get predictions on test data
@@ -48,5 +51,16 @@ predictions = np.rint(model.predict(data_test)) #the predictions are continuous,
 print('\nTesting accuracy: ' + str('%.2f'%(100*accuracy_score(targets_test, predictions))) + '%') #typically around 85%
 print('F1-score: ' + str('%.4f'%f1score(targets_test, predictions))) #typicaly around 0.64
 
-#save model weights
-model.save_weights("model.h5")
+#save model
+model.save('model.h5')
+
+#plot accuracy
+sns.set_style('darkgrid')
+pl.title('Model Accuracy During Training and Validation Stages')
+pl.ylabel('Accuracy')
+pl.xlabel('Epoch')
+pl.plot(history.history['acc'])
+pl.plot(history.history['val_acc'])
+pl.legend(['Training', 'Validation'])
+pl.savefig('MLP_acc.jpg')
+pl.show()
